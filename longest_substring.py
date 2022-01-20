@@ -4,13 +4,9 @@ class Solution:
         left_pt = longest = 0
         for right_pt, char in enumerate(s):
             if (match_idx := chars.get(char)) is not None:
-                for other_char_idx in range(left_pt, match_idx):
-                    del chars[s[other_char_idx]]
-                chars[char] = right_pt
-                left_pt = match_idx + 1
-            else:
-                chars[char] = right_pt
+                left_pt = max(match_idx, left_pt)
             longest = max(longest, right_pt - left_pt + 1)
+            chars[char] = right_pt + 1
         return longest
 
 
