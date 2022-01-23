@@ -1,18 +1,12 @@
 class Solution:
-    def is_alphanumeric(self, char):
-        return ((ord('a') <= ord(char.lower()) <= ord('z'))
-                or (ord('0') <= ord(char) <= ord('9')))
-
     def isPalindrome(self, s: str) -> bool:
         i = 0
         j = len(s) - 1
         while i < j:
-            while not self.is_alphanumeric(s[i]) and i < j:
+            while not s[i].isalnum() and i < j:
                 i += 1
-            while not self.is_alphanumeric(s[j]) and i < j:
+            while not s[j].isalnum() and i < j:
                 j -= 1
-            if i == j:
-                return True
             if s[i].lower() != s[j].lower():
                 return False
             i += 1
