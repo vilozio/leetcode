@@ -40,17 +40,14 @@ class LRUCache:
             if cached_value.age > lower_age.age:
                 lower_age_first_entry = self.age_first_entry[lower_age.age]
                 self.swap_age_order(cached_value, self.age_order[lower_age_first_entry])
-                # cached_value.age_pointer = lower_age_first_entry
-                # self.age_order[lower_age_first_entry].age_pointer = age_pointer
-                # swap(self.age_order, age_pointer, lower_age_first_entry)
-                # self.age_first_entry[lower_age.age] = lower_age_first_entry + 1
-                # if lower_age_first_entry == 0:
-                #     self.age_first_entry[cached_value.age] = 0
             elif cached_value.age == lower_age.age:
                 if cached_value.age_pointer == len(self.age_order) - 1:
                     del self.age_first_entry[cached_value.age - 1]
                 else:
                     self.age_first_entry[cached_value.age - 1] += 1
+        else:
+            self.age_first_entry[cached_value.age] = 0
+            self.age_first_entry[cached_value.age - 1] += 1
         return cached_value.value
 
     def put(self, key: int, value: int) -> None:
@@ -67,14 +64,8 @@ class LRUCache:
                     for i in range(newest_age_first_entry + 1, len(self.age_order)):
                         self.age_order[i].age_pointer = i - 1
                         self.age_order[i - 1] = self.age_order[i]
-                    # self.age_order[newest_age_first_entry]
-                    # self.age_order[-1].age_pointer = newest_age_first_entry
-                    # swap(self.age_order, newest_age_first_entry, -1)
-                # del self.hash_table[self.age_order[-1].key]
                 cached_value.age_pointer -= 1
                 self.age_order[-1] = cached_value
-                # lower_age_first_entry = self.age_first_entry[0]
-                # self.swap_age_order(cached_value, self.age_order[lower_age_first_entry])
             else:
                 self.age_order.append(cached_value)
             self.hash_table[key] = cached_value
@@ -88,8 +79,8 @@ def testcase1():
     lru_cache.put(3, 3)
     assert lru_cache.get(2) == -1
     lru_cache.put(4, 4)
-    assert lru_cache.get(1) == -1
-    assert lru_cache.get(3) == 3
+    assert lru_cache.get(1) == 1
+    assert lru_cache.get(3) == -1
     assert lru_cache.get(4) == 4
 
 
