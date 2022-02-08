@@ -1,59 +1,41 @@
 from dataclasses import dataclass
-from typing import Dict, Optional
+from typing import Dict
 
 
 @dataclass
 class CachedValue:
     key: int
     value: int
-    age: int
     next: 'CachedValue' = None
     prev: 'CachedValue' = None
 
 
-class LinkedList:
+class DLinkedList:
     def __init__(self):
-        self.head: Optional[CachedValue] = None
-        self.tail: Optional[CachedValue] = None
+        # Sentinel nodes.
+        self.head: CachedValue = CachedValue(0, 0)
+        self.tail: CachedValue = CachedValue(0, 0)
+        self.head.next = self.tail
+        self.tail.prev = self.head
 
-    def delete_head(self):
-        head = self.head
-        if self.head:
-            self.head = self.head.next
-            head.next = None  # clean link
-            if self.head is not None:
-                self.head.prev = None
-            else:
-                self.tail = None
+    def pop_head(self):
+        x = self.head.next
+        self.delete(x)
+        return x
 
     def delete(self, x):
-        if x.prev is not None:
-            x.prev.next = x.next
-        else:
-            self.head = x.next
-        if x.next is not None:
-            x.next.prev = x.prev
-        else:
-            self.tail = x.prev
+        x.prev.next, x.next.prev = x.next, x.prev
+        x.prev, x.next = None, None  # Clear links.
+        return x
 
     def append(self, x):
-        if self.tail:
-            self.tail.next = x
-        x.prev = self.tail
-        self.tail = x
-        if not self.head:
-            self.head = x
+        x.prev = self.tail.prev
+        x.next = self.tail
+        self.tail.prev.next = x
+        self.tail.prev = x
 
     def move_to_tail(self, x):
-        if self.tail == x:
-            return
-        if x.prev:
-            x.prev.next = x.next
-        else:
-            self.head = x.next
-        if x.next:
-            x.next.prev = x.prev
-            x.next = None
+        self.delete(x)
         self.append(x)
 
 
@@ -61,24 +43,25 @@ class LRUCache:
     def __init__(self, capacity: int):
         self.capacity = capacity
         self.hash_table: Dict[int, CachedValue] = {}
-        self.ages = LinkedList()
+        self.ages = DLinkedList()
 
     def get(self, key: int) -> int:
         cached = self.hash_table.get(key)
         if not cached:
             return -1
-        cached.age = self.ages.tail.age + 1
         self.ages.move_to_tail(cached)
         return cached.value
 
     def put(self, key: int, value: int) -> None:
-        if len(self.hash_table) == self.capacity and key not in self.hash_table:
-            del self.hash_table[self.ages.head.key]
-            self.ages.delete_head()
-        if key in self.hash_table:
-            self.ages.delete(self.hash_table[key])
-        age = self.ages.tail.age + 1 if self.ages.tail else 0
-        cached = CachedValue(key, value, age)
+        contains_key = key in self.hash_table
+        if len(self.hash_table) == self.capacity and not contains_key:
+            head = self.ages.pop_head()
+            del self.hash_table[head.key]
+        if contains_key:
+            cached = self.ages.delete(self.hash_table[key])
+            cached.value = value
+        else:
+            cached = CachedValue(key, value)
         self.hash_table[key] = cached
         self.ages.append(cached)
 
