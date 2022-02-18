@@ -1,4 +1,5 @@
-from typing import Optional, List
+from collections import deque
+from typing import Optional, Deque
 
 
 class TreeNode:
@@ -11,7 +12,7 @@ class TreeNode:
 class BSTIterator:
 
     def __init__(self, root: Optional[TreeNode]):
-        self.stack: List[TreeNode] = []
+        self.stack: Deque[TreeNode] = deque()
         self.fill_stack(root)
 
     def fill_stack(self, x: TreeNode):
