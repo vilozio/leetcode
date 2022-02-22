@@ -15,10 +15,7 @@ class Solution:
                 in_progress.subtract(in_progress)
                 i = j + 1
             if len(p) == j - i + 1:
-                for letter, count in in_progress.items():
-                    if p_letters[letter] != count:
-                        break
-                else:
+                if in_progress == p_letters:
                     result.append(i)
                 in_progress.subtract(s[i])
                 i += 1
