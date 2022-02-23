@@ -16,10 +16,7 @@ class Solution:
         while q:
             node = q.popleft()      # None
             if node is None:
-                for other_node in q:
-                    if other_node is not None:
-                        return False
-                return True
+                return not any(q)
             q.append(node.left)
             q.append(node.right)
         return True
