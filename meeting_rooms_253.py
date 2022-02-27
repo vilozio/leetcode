@@ -7,11 +7,11 @@ class Solution:
         heap = []
         min_rooms = 1
         intervals.sort(key=lambda x: x[0])
-        heapq.heappush(heap, (intervals[0][1], intervals[0]))  # [(36, [2, 36])]
+        heapq.heappush(heap, intervals[0][1])  # [(36, [2, 36])]
         for intr in intervals[1:]:  # [39, 46]
-            if intr[0] >= heap[0][0]:  # 39 >= 20
+            if intr[0] >= heap[0]:  # 39 >= 20
                 heapq.heappop(heap)  # [(34, [13, 34]), (36, [2, 36])]
-            heapq.heappush(heap, (intr[1], intr))  # [(46, [39, 46]), (34, [13, 34]), (36, [2, 36])]
+            heapq.heappush(heap, intr[1])  # [(46, [39, 46]), (34, [13, 34]), (36, [2, 36])]
             min_rooms = max(min_rooms, len(heap))  # 3
         return min_rooms
 
